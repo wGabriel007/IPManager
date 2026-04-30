@@ -1,4 +1,7 @@
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using projeto.Data;
@@ -46,12 +49,22 @@ public class CadastroModel : PageModel
         {
             Nome = Nome,
             Email = Email,
-            Senha = Senha
+            Senha = BCrypt.Net.BCrypt.HashPassword(Senha)
         };
 
         _db.Usuarios.Add(usuario);
         await _db.SaveChangesAsync();
 
-        return RedirectToPage("/Contas/Login");
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
+            new(ClaimTypes.Name, usuario.Nome),
+            new(ClaimTypes.Email, usuario.Email),
+        };
+
+        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
+
+        return RedirectToPage("/Projetos/Projetos");
     }
 }

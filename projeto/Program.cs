@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using projeto.Data;
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();

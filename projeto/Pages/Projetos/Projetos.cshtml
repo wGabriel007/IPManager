@@ -1,4 +1,184 @@
 ﻿@page
 @model projeto.Pages.Projetos.ProjetosModel
 @{
+    ViewData["Title"] = "Projetos";
+    var usuarioId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Projetos</h2>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCadastro">
+        + Cadastrar Projeto
+    </button>
+</div>
+
+<!-- Filtro -->
+<div class="mb-4">
+    <form method="get">
+        <div class="input-group" style="max-width: 400px;">
+            <input type="text" name="filtroNome" value="@Model.FiltroNome"
+                   class="form-control" placeholder="Filtrar pelo nome do projeto..." />
+            <button type="submit" class="btn btn-outline-secondary">Buscar</button>
+            @if (!string.IsNullOrEmpty(Model.FiltroNome))
+            {
+                <a href="/Projetos/Projetos" class="btn btn-outline-danger">Limpar</a>
+            }
+        </div>
+    </form>
+</div>
+
+<!-- Tabela de Projetos -->
+@if (!Model.ListaProjetos.Any())
+{
+    <div class="alert alert-info">Nenhum projeto encontrado.</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Nome do Projeto</th>
+                    <th>Endereço IP</th>
+                    <th>Tipo de IP</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var p in Model.ListaProjetos)
+                {
+                    <tr>
+                        <td>@p.Id</td>
+                        <td>@p.Nome</td>
+                        <td><code>@p.Ip</code></td>
+                        <td>
+                            <span class="badge @(p.TipoIp == "APP" ? "bg-primary" : "bg-warning text-dark")">
+                                @p.TipoIp
+                            </span>
+                        </td>
+                        <td>
+                            @if (p.UsuarioId == usuarioId)
+                            {
+                                <button class="btn btn-sm btn-outline-secondary me-1"
+                                        onclick="abrirEditar(@p.Id, '@p.Nome', '@p.Ip', '@p.TipoIp')"
+                                        data-bs-toggle="modal" data-bs-target="#modalEditar">
+                                    Editar
+                                </button>
+                                <form method="post" asp-page-handler="Excluir" asp-route-id="@p.Id"
+                                      style="display:inline"
+                                      onsubmit="return confirm('Excluir o projeto @p.Nome?')">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Excluir</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <span class="text-muted small">—</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<!-- Modal Cadastrar -->
+<div class="modal fade" id="modalCadastro" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-page-handler="Cadastrar">
+                <div class="modal-header">
+                    <h5 class="modal-title">Cadastrar Projeto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    @if (!string.IsNullOrEmpty(Model.ErroMensagem))
+                    {
+                        <div class="alert alert-danger">@Model.ErroMensagem</div>
+                    }
+                    <div class="mb-3">
+                        <label asp-for="NovoNome" class="form-label">Nome do Projeto</label>
+                        <input asp-for="NovoNome" class="form-control" placeholder="Nome do projeto" />
+                        <span asp-validation-for="NovoNome" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="NovoIp" class="form-label">Endereço IP</label>
+                        <input asp-for="NovoIp" class="form-control" placeholder="ex: 192.168.0.1" />
+                        <span asp-validation-for="NovoIp" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="NovoTipoIp" class="form-label">Tipo de IP</label>
+                        <select asp-for="NovoTipoIp" class="form-select">
+                            <option value="">-- Selecione --</option>
+                            <option value="APP">APP</option>
+                            <option value="Banco">Banco</option>
+                        </select>
+                        <span asp-validation-for="NovoTipoIp" class="text-danger small"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Editar -->
+<div class="modal fade" id="modalEditar" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-page-handler="Editar">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Projeto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" asp-for="EditarId" id="editId" />
+                    <div class="mb-3">
+                        <label asp-for="EditarNome" class="form-label">Nome do Projeto</label>
+                        <input asp-for="EditarNome" class="form-control" id="editNome" />
+                        <span asp-validation-for="EditarNome" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="EditarIp" class="form-label">Endereço IP</label>
+                        <input asp-for="EditarIp" class="form-control" id="editIp" />
+                        <span asp-validation-for="EditarIp" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="EditarTipoIp" class="form-label">Tipo de IP</label>
+                        <select asp-for="EditarTipoIp" class="form-select" id="editTipoIp">
+                            <option value="APP">APP</option>
+                            <option value="Banco">Banco</option>
+                        </select>
+                        <span asp-validation-for="EditarTipoIp" class="text-danger small"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function abrirEditar(id, nome, ip, tipoIp) {
+            document.getElementById('editId').value = id;
+            document.getElementById('editNome').value = nome;
+            document.getElementById('editIp').value = ip;
+            document.getElementById('editTipoIp').value = tipoIp;
+        }
+    </script>
+    @if (!string.IsNullOrEmpty(Model.ErroMensagem))
+    {
+        <script>
+            var modal = new bootstrap.Modal(document.getElementById('modalCadastro'));
+            modal.show();
+        </script>
+    }
 }
