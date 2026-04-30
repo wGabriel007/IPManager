@@ -1,0 +1,52 @@
+@page
+@model projeto.Pages.Contas.CadastroModel
+@{
+    ViewData["Title"] = "Cadastro";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cadastro</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+</head>
+<body class="bg-light">
+    <div class="container d-flex justify-content-center align-items-center min-vh-100">
+        <div class="card shadow p-4" style="width: 100%; max-width: 450px;">
+            <h3 class="card-title text-center mb-4">Criar Conta</h3>
+
+            @if (!string.IsNullOrEmpty(Model.ErroMensagem))
+            {
+                <div class="alert alert-danger">@Model.ErroMensagem</div>
+            }
+
+            <form method="post">
+                <div class="mb-3">
+                    <label asp-for="Nome" class="form-label">Nome</label>
+                    <input asp-for="Nome" class="form-control" placeholder="Seu nome completo" />
+                    <span asp-validation-for="Nome" class="text-danger small"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label">E-mail</label>
+                    <input asp-for="Email" class="form-control" placeholder="seu@email.com" />
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Senha" class="form-label">Senha</label>
+                    <input asp-for="Senha" type="password" class="form-control" placeholder="********" />
+                    <span asp-validation-for="Senha" class="text-danger small"></span>
+                </div>
+                <button type="submit" class="btn btn-success w-100">Cadastrar</button>
+            </form>
+
+            <hr />
+            <p class="text-center mb-0">
+                Já tem conta? <a href="/Contas/Login">Entrar</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
