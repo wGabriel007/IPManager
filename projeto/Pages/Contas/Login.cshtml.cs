@@ -34,11 +34,34 @@ public class LoginModel : PageModel
             return Page();
 
         var usuario = _db.Usuarios
-            .FirstOrDefault(u => u.Email == Email && u.Senha == Senha);
+            .FirstOrDefault(u => u.Email == Email);
 
         if (usuario is null)
         {
-            ErroMensagem = "E-mail ou senha incorretos.";
+            ErroMensagem = "E-mail não encontrado.";
+            return Page();
+        }
+
+        bool senhaValida;
+        try
+        {
+            senhaValida = BCrypt.Net.BCrypt.Verify(Senha, usuario.Senha);
+        }
+        catch
+        {
+            // Senha no banco ainda está em texto puro (não foi hasheada)
+            senhaValida = usuario.Senha == Senha;
+            if (senhaValida)
+            {
+                // Aproveita e já atualiza para hash
+                usuario.Senha = BCrypt.Net.BCrypt.HashPassword(Senha);
+                await _db.SaveChangesAsync();
+            }
+        }
+
+        if (!senhaValida)
+        {
+            ErroMensagem = "Senha incorreta.";
             return Page();
         }
 
@@ -52,6 +75,6 @@ public class LoginModel : PageModel
         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
 
-        return RedirectToPage("/Index");
+        return RedirectToPage("/Projetos/Projetos");
     }
 }
