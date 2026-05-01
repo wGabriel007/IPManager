@@ -38,7 +38,6 @@ else
         <table class="table table-bordered table-hover align-middle">
             <thead class="table-dark">
                 <tr>
-                    <th>#</th>
                     <th>Nome do Projeto</th>
                     <th>Endereço IP</th>
                     <th>Tipo de IP</th>
@@ -49,8 +48,10 @@ else
                 @foreach (var p in Model.ListaProjetos)
                 {
                     <tr>
-                        <td>@p.Id</td>
-                        <td>@p.Nome</td>
+                        <td>
+                            <div>@p.Nome</div>
+                            <small class="text-muted">@(p.Usuario?.Nome ?? "—")</small>
+                        </td>
                         <td><code>@p.Ip</code></td>
                         <td>
                             <span class="badge @(p.TipoIp == "APP" ? "bg-primary" : "bg-warning text-dark")">
@@ -61,7 +62,7 @@ else
                             @if (p.UsuarioId == usuarioId)
                             {
                                 <button class="btn btn-sm btn-outline-secondary me-1"
-                                        onclick="abrirEditar(@p.Id, '@p.Nome', '@p.Ip', '@p.TipoIp')"
+                                        onclick="abrirEditar('@p.Nome', '@p.Ip', '@p.TipoIp')"
                                         data-bs-toggle="modal" data-bs-target="#modalEditar">
                                     Editar
                                 </button>
