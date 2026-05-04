@@ -49,11 +49,9 @@ public class LoginModel : PageModel
         }
         catch
         {
-            // Senha no banco ainda está em texto puro (não foi hasheada)
             senhaValida = usuario.Senha == Senha;
             if (senhaValida)
             {
-                // Aproveita e já atualiza para hash
                 usuario.Senha = BCrypt.Net.BCrypt.HashPassword(Senha);
                 await _db.SaveChangesAsync();
             }
