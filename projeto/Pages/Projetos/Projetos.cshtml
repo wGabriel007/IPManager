@@ -5,7 +5,23 @@
     var usuarioId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
+<style>
+
+    .resultados{
+        display: inline-block;
+        margin-left: 1200px;
+        margin-top: 25px;
+    }
+    .filtro{
+        display: inline-block;
+        margin-bottom: 10px;
+        margin-top: 40px;
+    }
+    
+</style>
+
+
+<div class="d-flex justify-content-between align-items-center mb-2">
     <h2 class="mb-0">Projetos</h2>
     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCadastro">
         + Cadastrar Projeto
@@ -13,18 +29,25 @@
 </div>
 
 <!-- Filtro -->
-<div class="mb-4">
+
+<div class="filtro">
     <form method="get">
         <div class="input-group" style="max-width: 400px;">
             <input type="text" name="filtroNome" value="@Model.FiltroNome"
                    class="form-control" placeholder="Filtrar pelo nome do projeto..." />
             <button type="submit" class="btn btn-outline-secondary">Buscar</button>
-            @if (!string.IsNullOrEmpty(Model.FiltroNome))
-            {
-                <a href="/Projetos/Projetos" class="btn btn-outline-danger">Limpar</a>
-            }
+                @if (!string.IsNullOrEmpty(Model.FiltroNome))
+                {
+                    <a href="/Projetos/Projetos" class="btn btn-outline-danger">Limpar</a>
+                }
         </div>
     </form>
+</div>
+
+ <!-- Resultados -->
+
+<div class="resultados">
+    <p>@Model.ListaProjetos.Count Resultados</p>
 </div>
 
 <!-- Tabela de Projetos -->
@@ -86,6 +109,7 @@ else
 
 <!-- Modal Cadastrar -->
 <div class="modal fade" id="modalCadastro" tabindex="-1" aria-hidden="true">
+
     <div class="modal-dialog">
         <div class="modal-content">
             <form method="post" asp-page-handler="Cadastrar">
