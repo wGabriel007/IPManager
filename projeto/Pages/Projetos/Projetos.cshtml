@@ -37,14 +37,21 @@
 
 <div class="filtro">
     <form method="get">
-        <div class="input-group" style="max-width: 400px;">
-            <input type="text" name="filtroNome" value="@Model.FiltroNome"
-                   class="form-control" placeholder="Filtrar pelo nome do projeto..." />
+        <div class="d-flex flex-wrap gap-2">
+            <input type="text" name="FiltroNome" value="@Model.FiltroNome"
+                   class="form-control" style="max-width:200px" placeholder="Nome do projeto..." />
+            <input type="text" name="FiltroIp" value="@Model.FiltroIp"
+                   class="form-control" style="max-width:180px" placeholder="Endereço IP..." />
+            <select name="FiltroTipoIp" class="form-select" style="max-width:150px">
+                <option value="">Todos os tipos</option>
+                <option value="APP" selected="@(Model.FiltroTipoIp == "APP")">APP</option>
+                <option value="Banco" selected="@(Model.FiltroTipoIp == "Banco")">Banco</option>
+            </select>
             <button type="submit" class="btn btn-outline-secondary">Buscar</button>
-                @if (!string.IsNullOrEmpty(Model.FiltroNome))
-                {
-                    <a href="/Projetos/Projetos" class="btn btn-outline-danger">Limpar</a>
-                }
+            @if (!string.IsNullOrEmpty(Model.FiltroNome) || !string.IsNullOrEmpty(Model.FiltroIp) || !string.IsNullOrEmpty(Model.FiltroTipoIp))
+            {
+                <a href="/Projetos/Projetos" class="btn btn-outline-danger">Limpar</a>
+            }
         </div>
     </form>
 </div>

@@ -24,6 +24,12 @@ namespace projeto.Pages.Projetos
         [BindProperty(SupportsGet = true)]
         public string? FiltroNome { get; set; }
 
+        [BindProperty(SupportsGet = true)]
+        public string? FiltroIp {  get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        public string? FiltroTipoIp { get; set; }
+
         // Campos do formulário de cadastro
         [BindProperty]
         [Required(ErrorMessage = "Informe o nome do projeto")]
@@ -64,6 +70,7 @@ namespace projeto.Pages.Projetos
                 var claim = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 return int.TryParse(claim, out var id) ? id : null;
             }
+
         }
 
         public async Task OnGetAsync()
@@ -72,6 +79,12 @@ namespace projeto.Pages.Projetos
 
             if (!string.IsNullOrWhiteSpace(FiltroNome))
                 query = query.Where(p => p.Nome.ToLower().Contains(FiltroNome.ToLower()));
+
+            if (!string.IsNullOrWhiteSpace(FiltroIp))
+                query = query.Where(p => p.Ip.Contains(FiltroIp));
+
+            if (!string.IsNullOrWhiteSpace(FiltroTipoIp))
+                query = query.Where(p => p.TipoIp == FiltroTipoIp);
 
             ListaProjetos = await query.OrderBy(p => p.Nome).ToListAsync();
         }
