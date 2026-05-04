@@ -68,7 +68,7 @@ namespace projeto.Pages.Projetos
 
         public async Task OnGetAsync()
         {
-            var query = _db.Projetos.AsQueryable();
+            var query = _db.Projetos.Include(p => p.Usuario).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(FiltroNome))
                 query = query.Where(p => p.Nome.ToLower().Contains(FiltroNome.ToLower()));
