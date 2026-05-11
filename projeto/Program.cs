@@ -1,7 +1,29 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using projeto.Data;
+using DotNetEnv;
+
+
 var builder = WebApplication.CreateBuilder(args);
+
+
+Env.Load();
+
+
+// Variáveis de ambiente DB
+
+var host = Environment.GetEnvironmentVariable("DB_HOST");
+var db = Environment.GetEnvironmentVariable("DB_NAME");
+var port = Environment.GetEnvironmentVariable("DB_PORT");
+var user = Environment.GetEnvironmentVariable("DB_USER");
+var pass = Environment.GetEnvironmentVariable("DB_PASSWORD");
+
+var connectionString = $"Host={host};Port={port};Database={db};Username={user};Password={pass}";
+
+// registro de AddDbContext
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(connectionString));
+
 
 builder.Services.AddRazorPages();
 
