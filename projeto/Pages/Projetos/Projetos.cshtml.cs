@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using projeto.Data;
-using projeto.Models;
+
 
 namespace projeto.Pages.Projetos
 {
@@ -78,15 +78,15 @@ namespace projeto.Pages.Projetos
             var query = _db.Projetos.Include(p => p.Usuario).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(FiltroNome))
-                query = query.Where(p => p.Nome.ToLower().Contains(FiltroNome.ToLower()));
+                query = query.Where(p => p.str_Nome.ToLower().Contains(FiltroNome.ToLower()));
 
             if (!string.IsNullOrWhiteSpace(FiltroIp))
-                query = query.Where(p => p.Ip.Contains(FiltroIp));
+                query = query.Where(p => p.str_Ip.Contains(FiltroIp));
 
             if (!string.IsNullOrWhiteSpace(FiltroTipoIp))
-                query = query.Where(p => p.TipoIp == FiltroTipoIp);
+                query = query.Where(p => p.str_TipoIp == FiltroTipoIp);
 
-            ListaProjetos = await query.OrderBy(p => p.Nome).ToListAsync();
+            ListaProjetos = await query.OrderBy(p => p.str_Nome).ToListAsync();
         }
 
         // Cadastrar
@@ -110,10 +110,10 @@ namespace projeto.Pages.Projetos
 
             _db.Projetos.Add(new Projeto
             {
-                Nome = NovoNome,
-                Ip = NovoIp,
-                TipoIp = NovoTipoIp,
-                UsuarioId = UsuarioLogadoId.Value
+                str_Nome = NovoNome,
+                str_Ip = NovoIp,
+                str_TipoIp = NovoTipoIp,
+                int_UsuarioId = UsuarioLogadoId.Value
             });
 
             await _db.SaveChangesAsync();
@@ -135,12 +135,12 @@ namespace projeto.Pages.Projetos
 
             var projeto = await _db.Projetos.FindAsync(EditarId);
 
-            if (projeto is null || projeto.UsuarioId != UsuarioLogadoId)
+            if (projeto is null || projeto.int_UsuarioId != UsuarioLogadoId)
                 return Forbid();
 
-            projeto.Nome = EditarNome;
-            projeto.Ip = EditarIp;
-            projeto.TipoIp = EditarTipoIp;
+            projeto.str_Nome = EditarNome;
+            projeto.str_Ip = EditarIp;
+            projeto.str_TipoIp = EditarTipoIp;
 
             await _db.SaveChangesAsync();
             return RedirectToPage();
@@ -151,7 +151,7 @@ namespace projeto.Pages.Projetos
         {
             var projeto = await _db.Projetos.FindAsync(id);
 
-            if (projeto is null || projeto.UsuarioId != UsuarioLogadoId)
+            if (projeto is null || projeto.int_UsuarioId != UsuarioLogadoId)
                 return Forbid();
 
             _db.Projetos.Remove(projeto);

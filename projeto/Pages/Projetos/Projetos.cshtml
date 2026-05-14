@@ -84,26 +84,26 @@ else
                 {
                     <tr>
                         <td>
-                            <div>@p.Nome</div>
-                            <small class="text-muted">@(p.Usuario?.Nome ?? "—")</small>
+                            <div>@p.str_Nome</div>
+                            <small class="text-muted">@(p.Usuario?.str_Nome ?? "—")</small>
                         </td>
-                        <td><code>@p.Ip</code></td>
+                        <td><code>@p.str_Ip</code></td>
                         <td>
-                            <span class="badge @(p.TipoIp == "APP" ? "bg-primary" : "bg-warning text-dark")">
-                                @p.TipoIp
+                            <span class="badge @(p.str_TipoIp == "APP" ? "bg-primary" : "bg-warning text-dark")">
+                                @p.str_TipoIp
                             </span>
                         </td>
                         <td>
-                            @if (p.UsuarioId == usuarioId)
+                            @if (p.int_UsuarioId == usuarioId)
                             {
                                 <button class="btn btn-sm btn-outline-secondary me-1"
-                                        onclick="abrirEditar('@p.Nome', '@p.Ip', '@p.TipoIp')"
+                                        onclick="abrirEditar(@p.int_Id, '@p.str_Nome','@p.str_Ip','@p.str_TipoIp')"
                                         data-bs-toggle="modal" data-bs-target="#modalEditar">
                                     Editar
                                 </button>
-                                <form method="post" asp-page-handler="Excluir" asp-route-id="@p.Id"
+                                <form method="post" asp-page-handler="Excluir" asp-route-id="@p.int_Id"
                                       style="display:inline"
-                                      onsubmit="return confirm('Excluir o projeto @p.Nome?')">
+                                      onsubmit="return confirm('Excluir o projeto @p.str_Nome?')">
                                     <button type="submit" class="btn btn-sm btn-outline-danger">Excluir</button>
                                 </form>
                             }

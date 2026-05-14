@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using projeto.Data;
-using projeto.Models;
 
 namespace projeto.Pages.Contas;
 
@@ -39,7 +38,7 @@ public class CadastroModel : PageModel
         if (!ModelState.IsValid)
             return Page();
 
-        if (_db.Usuarios.Any(u => u.Email == Email))
+        if (_db.Usuarios.Any(u => u.str_Email == Email))
         {
             ErroMensagem = "Este e-mail já está cadastrado.";
             return Page();
@@ -47,9 +46,9 @@ public class CadastroModel : PageModel
 
         var usuario = new Usuario
         {
-            Nome = Nome,
-            Email = Email,
-            Senha = BCrypt.Net.BCrypt.HashPassword(Senha)
+            str_Nome = Nome,
+            str_Email = Email,
+            str_Senha = BCrypt.Net.BCrypt.HashPassword(Senha)
         };
 
         _db.Usuarios.Add(usuario);
@@ -57,9 +56,9 @@ public class CadastroModel : PageModel
 
         var claims = new List<Claim>
         {
-            new(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
-            new(ClaimTypes.Name, usuario.Nome),
-            new(ClaimTypes.Email, usuario.Email),
+            new(ClaimTypes.NameIdentifier, usuario.int_Id.ToString()),
+            new(ClaimTypes.Name, usuario.str_Nome),
+            new(ClaimTypes.Email, usuario.str_Email),
         };
 
         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
