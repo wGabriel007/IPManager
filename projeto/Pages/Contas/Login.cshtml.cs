@@ -34,7 +34,7 @@ public class LoginModel : PageModel
             return Page();
 
         var usuario = _db.Usuarios
-            .FirstOrDefault(u => u.Email == Email);
+            .FirstOrDefault(u => u.str_Email == Email);
 
         if (usuario is null)
         {
@@ -45,14 +45,14 @@ public class LoginModel : PageModel
         bool senhaValida;
         try
         {
-            senhaValida = BCrypt.Net.BCrypt.Verify(Senha, usuario.Senha);
+            senhaValida = BCrypt.Net.BCrypt.Verify(Senha, usuario.str_Senha);
         }
         catch
         {
-            senhaValida = usuario.Senha == Senha;
+            senhaValida = usuario.str_Senha == Senha;
             if (senhaValida)
             {
-                usuario.Senha = BCrypt.Net.BCrypt.HashPassword(Senha);
+                usuario.str_Senha = BCrypt.Net.BCrypt.HashPassword(Senha);
                 await _db.SaveChangesAsync();
             }
         }
@@ -65,9 +65,9 @@ public class LoginModel : PageModel
 
         var claims = new List<Claim>
         {
-            new(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
-            new(ClaimTypes.Name, usuario.Nome),
-            new(ClaimTypes.Email, usuario.Email),
+            new(ClaimTypes.NameIdentifier, usuario.int_Id.ToString()),
+            new(ClaimTypes.Name, usuario.str_Nome),
+            new(ClaimTypes.Email, usuario.str_Email),
         };
 
         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using projeto.Models;
+
 
 namespace projeto.Data;
 
