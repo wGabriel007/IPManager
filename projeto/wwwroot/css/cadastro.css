@@ -1,0 +1,96 @@
+/* =============================
+   Cadastro – IPManager
+   ============================= */
+
+/* Reset */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Página */
+body {
+    background: #1e1e2e;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* Card central */
+.card {
+    background: #2a2a3e;
+    padding: 2.5rem 2rem;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .4);
+}
+
+/* Título */
+h1 {
+    color: #e0e0f0;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.6rem;
+}
+
+/* Rótulos */
+label {
+    color: #a0a0c0;
+    font-size: .85rem;
+    display: block;
+    margin-bottom: .3rem;
+}
+
+/* Campos de entrada */
+input {
+    width: 100%;
+    padding: .65rem .85rem;
+    border-radius: 8px;
+    border: 1px solid #3a3a5c;
+    background: #1e1e2e;
+    color: #e0e0f0;
+    margin-bottom: .25rem;
+}
+
+input:focus {
+    outline: none;
+    border-color: #6366f1;
+}
+
+/* Botão principal */
+button {
+    width: 100%;
+    padding: .7rem;
+    background: #6366f1;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: .75rem;
+}
+
+button:hover {
+    background: #4f52d3;
+}
+
+/* Mensagem de erro */
+.erro {
+    color: #f87171;
+    font-size: .82rem;
+    display: block;
+    margin-bottom: .75rem;
+}
+
+/* Link de navegação */
+.link {
+    color: #818cf8;
+    font-size: .85rem;
+    display: block;
+    text-align: center;
+    margin-top: 1rem;
+}

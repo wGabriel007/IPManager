@@ -1,25 +1,21 @@
-﻿@page
-@model projeto.Pages.Projetos.ProjetosModel
+@model projeto.ViewModels.ProjetosViewModel
 @{
     ViewData["Title"] = "Projetos";
     var usuarioId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
 }
 
 <style>
-
-    .resultados{
+    .resultados {
         display: inline-block;
         margin-left: 1200px;
         margin-top: 25px;
     }
-    .filtro{
+    .filtro {
         display: inline-block;
         margin-bottom: 10px;
         margin-top: 40px;
     }
-    
 </style>
-
 
 <div class="d-flex justify-content-between align-items-center mb-2">
     <h2 class="mb-0">Projetos</h2>
@@ -27,37 +23,36 @@
         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCadastro">
             + Cadastrar Projeto
         </button>
-        <form method="post" asp-page="/Contas/Logout">
+        <form method="post" asp-action="Logout" asp-controller="Contas">
+            @Html.AntiForgeryToken()
             <button type="submit" class="btn btn-outline-danger">Sair</button>
         </form>
     </div>
 </div>
 
 <!-- Filtro -->
-
 <div class="filtro">
-    <form method="get">
+    <form method="get" asp-action="Index" asp-controller="Projetos">
         <div class="d-flex flex-wrap gap-2">
-            <input type="text" name="FiltroNome" value="@Model.FiltroNome"
+            <input type="text" name="filtroNome" value="@Model.FiltroNome"
                    class="form-control" style="max-width:200px" placeholder="Nome do projeto..." />
-            <input type="text" name="FiltroIp" value="@Model.FiltroIp"
+            <input type="text" name="filtroIp" value="@Model.FiltroIp"
                    class="form-control" style="max-width:180px" placeholder="Endereço IP..." />
-            <select name="FiltroTipoIp" class="form-select" style="max-width:150px">
+            <select name="filtroTipoIp" class="form-select" style="max-width:150px">
                 <option value="">Todos os tipos</option>
-                <option value="APP" selected="@(Model.FiltroTipoIp == "APP")">APP</option>
-                <option value="Banco" selected="@(Model.FiltroTipoIp == "Banco")">Banco</option>
+                <option value="APP"   selected="@(Model.FiltroTipoIp == "APP"   ? "selected" : null)">APP</option>
+                <option value="Banco" selected="@(Model.FiltroTipoIp == "Banco" ? "selected" : null)">Banco</option>
             </select>
             <button type="submit" class="btn btn-outline-secondary">Buscar</button>
             @if (!string.IsNullOrEmpty(Model.FiltroNome) || !string.IsNullOrEmpty(Model.FiltroIp) || !string.IsNullOrEmpty(Model.FiltroTipoIp))
             {
-                <a href="/Projetos/Projetos" class="btn btn-outline-danger">Limpar</a>
+                <a href="@Url.Action("Index","Projetos")" class="btn btn-outline-danger">Limpar</a>
             }
         </div>
     </form>
 </div>
 
- <!-- Resultados -->
-
+<!-- Resultados -->
 <div class="resultados">
     <p>@Model.ListaProjetos.Count Resultados</p>
 </div>
@@ -97,13 +92,14 @@ else
                             @if (p.int_UsuarioId == usuarioId)
                             {
                                 <button class="btn btn-sm btn-outline-secondary me-1"
-                                        onclick="abrirEditar(@p.int_Id, '@p.str_Nome','@p.str_Ip','@p.str_TipoIp')"
+                                        onclick="abrirEditar(@p.int_Id, '@p.str_Nome', '@p.str_Ip', '@p.str_TipoIp')"
                                         data-bs-toggle="modal" data-bs-target="#modalEditar">
                                     Editar
                                 </button>
-                                <form method="post" asp-page-handler="Excluir" asp-route-id="@p.int_Id"
-                                      style="display:inline"
+                                <form method="post" asp-action="Excluir" asp-controller="Projetos"
+                                      asp-route-id="@p.int_Id" style="display:inline"
                                       onsubmit="return confirm('Excluir o projeto @p.str_Nome?')">
+                                    @Html.AntiForgeryToken()
                                     <button type="submit" class="btn btn-sm btn-outline-danger">Excluir</button>
                                 </form>
                             }
@@ -118,12 +114,13 @@ else
         </table>
     </div>
 }
+
 <!-- Modal Cadastrar -->
 <div class="modal fade" id="modalCadastro" tabindex="-1" aria-hidden="true">
-
     <div class="modal-dialog">
         <div class="modal-content">
-            <form method="post" asp-page-handler="Cadastrar">
+            <form method="post" asp-action="Cadastrar" asp-controller="Projetos">
+                @Html.AntiForgeryToken()
                 <div class="modal-header">
                     <h5 class="modal-title">Cadastrar Projeto</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -166,7 +163,8 @@ else
 <div class="modal fade" id="modalEditar" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form method="post" asp-page-handler="Editar">
+            <form method="post" asp-action="Editar" asp-controller="Projetos">
+                @Html.AntiForgeryToken()
                 <div class="modal-header">
                     <h5 class="modal-title">Editar Projeto</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>

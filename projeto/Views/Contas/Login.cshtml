@@ -1,0 +1,39 @@
+@model projeto.ViewModels.LoginViewModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <title>Login – IPManager</title>
+    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+</head>
+<body>
+<div class="card">
+    <h1>IPManager</h1>
+
+    @{
+        var erroGeral = ViewData.ModelState[""]?.Errors.FirstOrDefault()?.ErrorMessage;
+    }
+    @if (erroGeral != null)
+    {
+        <p class="erro">@erroGeral</p>
+    }
+
+    <form method="post" asp-action="Login" asp-controller="Contas">
+        @Html.AntiForgeryToken()
+        <label>E-mail</label>
+        <input asp-for="Email" type="email" placeholder="seuemail@exemplo.com" />
+        <span asp-validation-for="Email" class="erro"></span>
+
+        <label>Senha</label>
+        <input asp-for="Senha" type="password" placeholder="••••••" />
+        <span asp-validation-for="Senha" class="erro"></span>
+
+        <button type="submit">Entrar</button>
+    </form>
+    <a class="link" href="@Url.Action("Cadastro","Contas")">Não tem conta? Cadastre-se</a>
+</div>
+</body>
+</html>
