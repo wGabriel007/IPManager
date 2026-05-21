@@ -53,6 +53,7 @@ public class ProjetosController : Controller
         ModelState.Remove(nameof(vm.EditarNome));
         ModelState.Remove(nameof(vm.EditarIp));
         ModelState.Remove(nameof(vm.EditarTipoIp));
+        ModelState.Remove(nameof(vm.EditarAmbiente));
         ModelState.Remove(nameof(vm.ListaProjetos));
 
         if (!ModelState.IsValid)
@@ -67,9 +68,11 @@ public class ProjetosController : Controller
 
         _db.Projetos.Add(new Projeto
         {
-            str_Nome    = vm.NovoNome,
-            str_Ip      = vm.NovoIp,
-            str_TipoIp  = vm.NovoTipoIp,
+            str_Nome      = vm.NovoNome,
+            str_Ip        = vm.NovoIp,
+            str_TipoIp    = vm.NovoTipoIp,
+            str_Ambiente  = vm.Ambiente,
+            bool_VPN      = vm.NovoVPN,
             int_UsuarioId = UsuarioLogadoId
         });
 
@@ -84,6 +87,7 @@ public class ProjetosController : Controller
         ModelState.Remove(nameof(vm.NovoNome));
         ModelState.Remove(nameof(vm.NovoIp));
         ModelState.Remove(nameof(vm.NovoTipoIp));
+        ModelState.Remove(nameof(vm.Ambiente));
         ModelState.Remove(nameof(vm.ListaProjetos));
 
         if (!ModelState.IsValid)
@@ -98,9 +102,11 @@ public class ProjetosController : Controller
         if (projeto is null || projeto.int_UsuarioId != UsuarioLogadoId)
             return Forbid();
 
-        projeto.str_Nome   = vm.EditarNome;
-        projeto.str_Ip     = vm.EditarIp;
-        projeto.str_TipoIp = vm.EditarTipoIp;
+        projeto.str_Nome     = vm.EditarNome;
+        projeto.str_Ip       = vm.EditarIp;
+        projeto.str_TipoIp   = vm.EditarTipoIp;
+        projeto.str_Ambiente = vm.EditarAmbiente;
+        projeto.bool_VPN     = vm.EditarVPN;
 
         await _db.SaveChangesAsync();
         return RedirectToAction("Index");

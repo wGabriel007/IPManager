@@ -5,15 +5,51 @@
 }
 
 <style>
-    .resultados {
-        display: inline-block;
-        margin-left: 1200px;
-        margin-top: 25px;
-    }
     .filtro {
         display: inline-block;
         margin-bottom: 10px;
         margin-top: 40px;
+    }
+
+    .projeto-card {
+        border: 1px solid #dee2e6;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+    }
+
+    .projeto-card-body {
+        padding: 1rem;
+    }
+
+    .projeto-card-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 0.4rem;
+    }
+
+    .projeto-card-info {
+        font-size: 0.88rem;
+        color: #555;
+        margin-bottom: 0.2rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .projeto-card-info strong {
+        color: #222;
+    }
+
+    .projeto-card-actions {
+        margin-top: 0.8rem;
+        display: flex;
+        gap: 8px;
+    }
+
+    .nav-tabs .nav-link {
+        font-weight: 600;
     }
 </style>
 
@@ -52,68 +88,175 @@
     </form>
 </div>
 
-<!-- Resultados -->
-<div class="resultados">
-    <p>@Model.ListaProjetos.Count Resultados</p>
-</div>
+@{
+    var producao    = Model.ListaProjetos.Where(p => p.str_Ambiente == "PROD").ToList();
+    var homologacao = Model.ListaProjetos.Where(p => p.str_Ambiente == "HOMO").ToList();
+}
 
-<!-- Tabela de Projetos -->
-@if (!Model.ListaProjetos.Any())
-{
-    <div class="alert alert-info">Nenhum projeto encontrado.</div>
-}
-else
-{
-    <div class="table-responsive">
-        <table class="table table-bordered table-hover align-middle">
-            <thead class="table-dark">
-                <tr>
-                    <th>Nome do Projeto</th>
-                    <th>Endereço IP</th>
-                    <th>Tipo de IP</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var p in Model.ListaProjetos)
-                {
-                    <tr>
-                        <td>
-                            <div>@p.str_Nome</div>
-                            <small class="text-muted">@(p.Usuario?.str_Nome ?? "—")</small>
-                        </td>
-                        <td><code>@p.str_Ip</code></td>
-                        <td>
-                            <span class="badge @(p.str_TipoIp == "APP" ? "bg-primary" : "bg-warning text-dark")">
-                                @p.str_TipoIp
-                            </span>
-                        </td>
-                        <td>
-                            @if (p.int_UsuarioId == usuarioId)
-                            {
-                                <button class="btn btn-sm btn-outline-secondary me-1"
-                                        onclick="abrirEditar(@p.int_Id, '@p.str_Nome', '@p.str_Ip', '@p.str_TipoIp')"
-                                        data-bs-toggle="modal" data-bs-target="#modalEditar">
-                                    Editar
-                                </button>
-                                <form method="post" asp-action="Excluir" asp-controller="Projetos"
-                                      asp-route-id="@p.int_Id" style="display:inline"
-                                      onsubmit="return confirm('Excluir o projeto @p.str_Nome?')">
-                                    @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">Excluir</button>
-                                </form>
-                            }
-                            else
-                            {
-                                <span class="text-muted small">—</span>
-                            }
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+<!-- Resultados -->
+<p class="text-muted mt-2">@Model.ListaProjetos.Count resultado(s) encontrado(s)</p>
+
+<!-- Abas Produção / Homologação -->
+<ul class="nav nav-tabs mb-3" id="abas" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="tab-prod" data-bs-toggle="tab"
+                data-bs-target="#pane-prod" type="button" role="tab">
+            Produção @producao.Count
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tab-homo" data-bs-toggle="tab"
+                data-bs-target="#pane-homo" type="button" role="tab">
+            Homologação @homologacao.Count
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content" id="abasContent">
+
+    <!-- Aba Produção -->
+    <div class="tab-pane fade show active" id="pane-prod" role="tabpanel">
+        @if (!producao.Any())
+        {
+            <div class="alert alert-info">Nenhum projeto de produção encontrado.</div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Nome do Projeto</th>
+                            <th>Endereço IP</th>
+                            <th>Tipo de IP</th>
+                            <th>VPN</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var p in producao)
+                        {
+                            <tr>
+                                <td>
+                                    <div>@p.str_Nome</div>
+                                    <small class="text-muted">@(p.Usuario?.str_Nome ?? "—")</small>
+                                </td>
+                                <td><code>@p.str_Ip</code></td>
+                                <td>
+                                    <span class="badge @(p.str_TipoIp == "APP" ? "bg-primary" : "bg-warning text-dark")">
+                                        @p.str_TipoIp
+                                    </span>
+                                </td>
+                                <td>
+                                    @if (p.bool_VPN)
+                                    {
+                                        <span class="badge bg-success">Sim</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Não</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (p.int_UsuarioId == usuarioId)
+                                    {
+                                        <button class="btn btn-sm btn-outline-secondary me-1"
+                                                onclick="abrirEditar(@p.int_Id, '@p.str_Nome', '@p.str_Ip', '@p.str_TipoIp', '@p.str_Ambiente', @p.bool_VPN.ToString().ToLower())"
+                                                data-bs-toggle="modal" data-bs-target="#modalEditar">
+                                            Editar
+                                        </button>
+                                        <form method="post" asp-action="Excluir" asp-controller="Projetos"
+                                              asp-route-id="@p.int_Id" style="display:inline"
+                                              onsubmit="return confirm('Excluir o projeto @p.str_Nome?')">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Excluir</button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted small">—</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
     </div>
-}
+
+    <!-- Aba Homologação -->
+    <div class="tab-pane fade" id="pane-homo" role="tabpanel">
+        @if (!homologacao.Any())
+        {
+            <div class="alert alert-info">Nenhum projeto de homologação encontrado.</div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Nome do Projeto</th>
+                            <th>Endereço IP</th>
+                            <th>Tipo de IP</th>
+                            <th>VPN</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var p in homologacao)
+                        {
+                            <tr>
+                                <td>
+                                    <div>@p.str_Nome</div>
+                                    <small class="text-muted">@(p.Usuario?.str_Nome ?? "—")</small>
+                                </td>
+                                <td><code>@p.str_Ip</code></td>
+                                <td>
+                                    <span class="badge @(p.str_TipoIp == "APP" ? "bg-primary" : "bg-warning text-dark")">
+                                        @p.str_TipoIp
+                                    </span>
+                                </td>
+                                <td>
+                                    @if (p.bool_VPN)
+                                    {
+                                        <span class="badge bg-success">Sim</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Não</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (p.int_UsuarioId == usuarioId)
+                                    {
+                                        <button class="btn btn-sm btn-outline-secondary me-1"
+                                                onclick="abrirEditar(@p.int_Id, '@p.str_Nome', '@p.str_Ip', '@p.str_TipoIp', '@p.str_Ambiente', @p.bool_VPN.ToString().ToLower())"
+                                                data-bs-toggle="modal" data-bs-target="#modalEditar">
+                                            Editar
+                                        </button>
+                                        <form method="post" asp-action="Excluir" asp-controller="Projetos"
+                                              asp-route-id="@p.int_Id" style="display:inline"
+                                              onsubmit="return confirm('Excluir o projeto @p.str_Nome?')">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Excluir</button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted small">—</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+
+</div>
 
 <!-- Modal Cadastrar -->
 <div class="modal fade" id="modalCadastro" tabindex="-1" aria-hidden="true">
@@ -148,6 +291,19 @@ else
                             <option value="Banco">Banco</option>
                         </select>
                         <span asp-validation-for="NovoTipoIp" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Ambiente" class="form-label">Ambiente</label>
+                        <select asp-for="Ambiente" class="form-select">
+                            <option value="">-- Selecione --</option>
+                            <option value="PROD">Produção</option>
+                            <option value="HOMO">Homologação</option>
+                        </select>
+                        <span asp-validation-for="Ambiente" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input asp-for="NovoVPN" class="form-check-input" type="checkbox" id="editVpnCheck" />
+                        <label class="form-check-label" for="editVpnCheck">VPN</label>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -189,6 +345,19 @@ else
                         </select>
                         <span asp-validation-for="EditarTipoIp" class="text-danger small"></span>
                     </div>
+                    <div class="mb-3">
+                        <label asp-for="EditarAmbiente" class="form-label">Ambiente</label>
+                        <select asp-for="EditarAmbiente" class="form-select">
+                            <option value="">-- Selecione --</option>
+                            <option value="PROD">Produção</option>
+                            <option value="HOMO">Homologação</option>
+                        </select>
+                        <span asp-validation-for="EditarAmbiente" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input asp-for="EditarVPN" class="form-check-input" type="checkbox" id="editVpnCheck" />
+                        <label class="form-check-label" for="editVpnCheck">VPN</label>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -201,11 +370,13 @@ else
 
 @section Scripts {
     <script>
-        function abrirEditar(id, nome, ip, tipoIp) {
+        function abrirEditar(id, nome, ip, tipoIp, ambiente, vpn) {
             document.getElementById('editId').value = id;
             document.getElementById('editNome').value = nome;
             document.getElementById('editIp').value = ip;
             document.getElementById('editTipoIp').value = tipoIp;
+            document.getElementById('editAmbiente').value = ambiente;
+            document.getElementById('editVpnCheck').checked = vpn;
         }
     </script>
     @if (!string.IsNullOrEmpty(Model.ErroMensagem))
