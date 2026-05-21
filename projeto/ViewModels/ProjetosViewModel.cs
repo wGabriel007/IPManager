@@ -20,6 +20,9 @@ public class ProjetosViewModel
     public string NovoIp     { get; set; } = string.Empty;
     [Required(ErrorMessage = "Informe o tipo de IP")]
     public string NovoTipoIp { get; set; } = string.Empty;
+    [Required(ErrorMessage = "Informe o ambiente")]
+    public string Ambiente { get; set; } = string.Empty;
+    public bool NovoVPN { get; set; }
 
     // Campos para editar projeto
     public int    EditarId    { get; set; }
@@ -29,4 +32,7 @@ public class ProjetosViewModel
     public string EditarIp     { get; set; } = string.Empty;
     [Required(ErrorMessage = "Informe o tipo de IP")]
     public string EditarTipoIp { get; set; } = string.Empty;
+    [Required(ErrorMessage = "Informe o ambiente")]
+    public string EditarAmbiente { get; set; } = string.Empty;
+    public bool EditarVPN { get; set; }
 }

@@ -23,6 +23,12 @@ public class Projeto
     [Column("usuario_id")]
     public int int_UsuarioId { get; set; }
 
+    [Column("vpn")]
+    public bool bool_VPN { get; set; }
+
+    [Column("ambiente")]
+    public string str_Ambiente { get; set; } = string.Empty;
+
     [ForeignKey(nameof(int_UsuarioId))]
     public Usuario? Usuario { get; set; }
 }
